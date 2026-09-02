@@ -24,7 +24,7 @@
   Arch OS Endian
  )   
  (libraries
-    stdcompat
+    ; stdcompat
     fpath
     caps
   )
