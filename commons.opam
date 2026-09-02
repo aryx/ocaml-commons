@@ -13,6 +13,7 @@ depends: [
   "dune" {>= "3.7"}
   "odoc" {with-doc}
   "fpath"
+  "logs"
 #  "stdcompat"
 ]
 build: [
