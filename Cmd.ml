@@ -24,3 +24,12 @@ let env_of_list (inherit_parent_env : bool) (vars : (string * string) list) :
 (*****************************************************************************)
 (* API *)
 (*****************************************************************************)
+
+let to_string  (Name s, xs) =
+  s ^ " " ^ String.concat " " xs
+
+let run _caps cmd =
+  let str = to_string cmd in
+  match Sys.command str with
+  | 0 -> Exit.OK
+  | n -> Exit.Code n

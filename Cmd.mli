@@ -21,5 +21,7 @@ type env = { vars : (string * string) list; inherit_parent_env : bool }
  *)
 val env_of_list : (*?inherit_parent_env:*)bool -> (string * string) list -> env
 
+val run : < Cap.fork; Cap.exec; Cap.wait; .. > -> t -> Exit.t
+
 (* for error messages *)
-(* val to_string : t -> string *)
+val to_string : t -> string
