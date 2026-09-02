@@ -5,8 +5,8 @@
  ; to use Testo in ../tests/, which is relying on the OPAM Fpath, so we
  ; would get linking errors if we were using our own Fpath.ml so we must find a
  ; way to remain forward compatible.
- ; alt: we could also skip Logs.ml, but Testo is not using it so we're fine
- ; for now by providing our own Logs.ml
+ ; we now also skip Logs.ml; Testo is not using it so we're fine
+ ; for now by providing our own Logs.ml but we get errors in c-- project
  ; coupling: mkfile SRC variable
  (modules
   Set_ Map_
@@ -14,12 +14,12 @@
   Common
   Dumper OCaml
   Console
-  Logs Logs_
+  Logs_ ; Nope: Logs
   Exit Exception
   Chan FS IO Tmp
   Cmd Proc
   Date Bits Rune
-  Fpath_ ; Ftype
+  Fpath_ ; Nope: Fpath ; Ftype (use of =~)
   Arg_
   Arch OS Endian
  )   
