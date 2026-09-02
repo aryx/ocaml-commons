@@ -6,7 +6,7 @@
 (* Process helpers.
  *
  * history:
- *  - harrop article on fork-based parallelism
+ *  - Jon Harrop article on fork-based parallelism
  *  - pfff/commons/parallel.ml
  *  - pfff/commons/distribution.ml
  *  - semgrep/commons/CapProcess.ml
@@ -33,7 +33,7 @@ type ('a, 'exn) res_or_exn =
 (* API *)
 (*****************************************************************************)
 
-(* src: harrop article on fork-based parallelism
+(* src: Harrop's article on fork-based parallelism
  * returns a promise.
  * old: was called invoke() and was in pfff/commons/parallel.ml
  * related work: my pfff/commons/distribution.ml

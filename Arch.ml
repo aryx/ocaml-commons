@@ -17,9 +17,13 @@ type t =
   (* CISC *)
   | X86
   | Amd64
+  (* TODO: supported by c--, goken: M68k, Sparc, Powerpc, Alpha *)
 [@@deriving show]
 
-(* alt: rename to B8 | B16 | ... ? or Int8 | Int16 | ... ? *)
+(* alt: rename to B8 | B16 | ... ? or Int8 | Int16 | ... ? 
+ * alt: provide different types for each use case, type bits = Bxx; 
+ *  type arch_size = Archxxx, etc. type int_size = Intxxx ...
+ *)
 type bits =
   | Arch8
   | Arch16
