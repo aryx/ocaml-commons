@@ -1,4 +1,4 @@
-(* Common simple functions and small extensions to standard modules *)
+(* Common functions, types, and extensions to the standard library modules *)
 
 (*****************************************************************************)
 (* Core types and exceptions *)
@@ -13,7 +13,7 @@ exception Impossible of string
 (* Printing *)
 (*****************************************************************************)
 
-(* shorter than Printf.sprintf *)
+(* shorter than Printf.sprintf, especially after open Common *)
 val spf : ('a, unit, string) format -> 'a
 
 module Fmt_ : 
@@ -33,7 +33,9 @@ module Fun_ :
 (* Basic types *)
 (*****************************************************************************)
 
-(* For lib_core/system/plan9.ml and kernel/ *)
+(* For lib_core/system/plan9.ml and kernel/ 
+ * TODO: remove once we get more precise int in ocaml-light?
+*)
 type int8 = int
 type int16 = int
 type int32 = int
