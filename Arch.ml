@@ -39,10 +39,14 @@ let endian_of_arch = function
   | Arm64 -> Endian.Little
   (* Mips is a bi-endian. The PS1 is a little-endian R3000,
    * but other machines are big-endian R3000.
-   * By default on plan9 vl is big-endian and 0l (spim) is little endian.
-   * TODO: if put Big here I get a segfault with ovl, why ???
+   * claude: switched to Big to match goken's va/vl (Plan9's vl is
+   * big-endian by default; 0l/spim is the little-endian variant) for
+   * byte-equal differential testing -- see
+   * docs/claude_notes/notes_mips_port_plan.txt. This drops PS1
+   * compatibility as a goal. The segfault the old comment warned
+   * about was real; root-caused and fixed, see that same file.
    *)
-  | Mips -> Endian.Little
+  | Mips -> Endian.Big
   | Riscv -> Endian.Little
   | Riscv64 -> Endian.Little
   | X86 -> Endian.Big
