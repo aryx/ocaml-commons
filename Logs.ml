@@ -134,3 +134,8 @@ let err msgf = msg Error msgf
 let warn msgf = msg Warning msgf
 let info msgf = msg Info msgf
 let debug msgf = msg Debug msgf
+
+(* no-op stubs, see Logs.mli *)
+type reporter = unit
+let format_reporter () = ()
+let set_reporter (_ : reporter) = ()

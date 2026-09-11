@@ -54,4 +54,13 @@ val warn : 'a log
 val info : 'a log
 val debug : 'a log
 
-(* Note that src, tags, and reporter are not defined here *)
+(* Note that src and tags are not defined here.
+ * reporter/set_reporter/format_reporter are just no-op stubs kept for API
+ * compatibility with the real https://github.com/dbuenzli/logs library
+ * (this poor's man Logs.ml always reports directly, no reporter needed),
+ * so that CLI.ml code calling Logs.set_reporter (Logs.format_reporter ())
+ * compiles the same way whether dune picks this file or the real library.
+ *)
+type reporter
+val format_reporter : unit -> reporter
+val set_reporter : reporter -> unit

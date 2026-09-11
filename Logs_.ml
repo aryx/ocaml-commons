@@ -1,6 +1,12 @@
 
 let setup lvl () =
-  (* no special setup needed for xix Logs.ml *)
+  (* needed when dune picks the real opam "logs" library instead of our
+   * own Logs.ml (see lib_core/commons/dune): its default reporter is a
+   * no-op, so nothing gets printed until a reporter is installed.
+   * Our own Logs.ml doesn't need this (it always reports directly) so
+   * this is a no-op there, see Logs.ml/.mli.
+   *)
+  Logs.set_reporter (Logs.format_reporter ());
   Logs.set_level lvl
 
 let cli_flags (level : Logs.level option ref) : 
