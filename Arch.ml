@@ -49,8 +49,8 @@ let endian_of_arch = function
   | Mips -> Endian.Big
   | Riscv -> Endian.Little
   | Riscv64 -> Endian.Little
-  | X86 -> Endian.Big
-  | Amd64 -> Endian.Big
+  | X86 -> Endian.Little
+  | Amd64 -> Endian.Little
 
 let bits_of_arch = function
   | Arm -> Arch32
