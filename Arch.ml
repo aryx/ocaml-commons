@@ -42,7 +42,7 @@ let endian_of_arch = function
    * claude: switched to Big to match goken's va/vl (Plan9's vl is
    * big-endian by default; 0l/spim is the little-endian variant) for
    * byte-equal differential testing -- see
-   * docs/claude_notes/notes_mips_port_plan.txt. This drops PS1
+   * docs/claude_notes/mips_port.md. This drops PS1
    * compatibility as a goal. The segfault the old comment warned
    * about was real; root-caused and fixed, see that same file.
    *)
