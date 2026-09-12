@@ -134,7 +134,11 @@ let output_functions_of_endian (endian : t) =
   | Big -> Big.output_16, Big.output_32, Big.output_64
   | Little -> Little.output_16, Little.output_32, Little.output_64
 
+(* claude: added array_64 (already existed per-endian, just not
+ * exposed here) for ARM64's Datagen.ml need to fill an 8-byte DATA
+ * slice (e.g. a 64-bit integer global) -- see fill_bytes_for_int's
+ * own comment. *)
 let array_functions_of_endian (endian : t) =
   match endian with
-  | Big -> Big.array_16, Big.array_32
-  | Little -> Little.array_16, Little.array_32
+  | Big -> Big.array_16, Big.array_32, Big.array_64
+  | Little -> Little.array_16, Little.array_32, Little.array_64
