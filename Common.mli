@@ -75,6 +75,8 @@ module String_ :
 (*****************************************************************************)
 val ( ||| ) : 'a option -> 'a -> 'a
 
+val (let*) : 'a option -> ('a -> 'b option) -> 'b option
+
 module Either_ : 
   sig
     (* just for deriving show *)

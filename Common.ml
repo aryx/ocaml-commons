@@ -190,7 +190,8 @@ let ( ||| ) a b =
   | Some x -> x
   | None -> b
 
-(* TODO: let* once ocaml-light supports it *)
+(* ocaml-light now supports it! since 4.08 *)
+let (let*) = Option.bind
 
 (* ------------------------------------------------------------------------- *)
 (* Either *)
