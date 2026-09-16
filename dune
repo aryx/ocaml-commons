@@ -18,7 +18,7 @@
   Exit Exception
   Chan FS IO Tmp
   Cmd Proc
-  Date Bits Rune
+  Date Bits Rune Bits_of_float
   Fpath_ ; Nope: Fpath ; Ftype (use of =~)
   Arg_
   Arch OS Endian

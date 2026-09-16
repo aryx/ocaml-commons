@@ -25,6 +25,7 @@ SRC=\
  Chan.ml FS.ml IO.ml Tmp.ml \
  Cmd.ml Proc.ml \
  Date.ml Bits.ml Rune.ml \
+ Bits_of_float.ml \
  Exception.ml Exit.ml \
  Arg_.ml \
  Endian.ml Arch.ml OS.ml \
