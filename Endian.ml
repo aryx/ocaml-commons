@@ -14,20 +14,27 @@ open Common
 (* Helpers *)
 (*****************************************************************************)
 
-(* TODO: use Int32.t *)
-let split_32 (word : int) : byte * byte * byte * byte =
-  if word < 0 && word > 0xffffffff
-  then raise (Impossible (spf "should call lput with a uint32 not %d" word));
-
-  (* could also use land 0xFF ? *)
-  let x1 = Char.chr (word mod 256) in
-  let x2 = Char.chr ((word lsr 8) mod 256) in
-  let x3 = Char.chr ((word lsr 16) mod 256) in
-  let x4 = Char.chr ((word lsr 24) mod 256) in
-  x1, x2, x3, x4
+(* claude: recent OCaml would just do:
+ *   let split_32 (word : int) : byte * byte * byte * byte =
+ *     ...
+ *     let x4 = Char.chr ((word lsr 24) mod 256) in
+ *     ...
+ * -- `word lsr 24` can reach bit 31 (a uint32 with its own top bit
+ * set), which overflows a 32-bit host's 31-bit native int. Takes an
+ * Int32.t instead, always exactly 32 bits regardless of host word
+ * size; each byte is masked down to 0..255 before ever touching a
+ * native int (via Int32.to_int), which is always safe. This also
+ * makes the old "should call lput with a uint32" bounds check
+ * unnecessary -- an Int32.t can't hold anything outside uint32 range
+ * in the first place, so there's nothing left to check. *)
+let split_32 (word : Int32.t) : byte * byte * byte * byte =
+  let mask = Int32.of_int 0xff in
+  let byte_at (shift : int) : byte =
+    Char.chr (Int32.to_int (Int32.logand (Int32.shift_right_logical word shift) mask)) in
+  byte_at 0, byte_at 8, byte_at 16, byte_at 24
 
 let split_16 (word : int) : byte * byte =
-  if word < 0 && word > 0xffff
+  if word < 0 || word > 0xffff
   then raise (Impossible (spf "should call lput with a uint16 not %d" word));
 
   (* could also use land 0xFF ? *)
@@ -36,19 +43,18 @@ let split_16 (word : int) : byte * byte =
   x1, x2
 
 (* claude: for ELF64 (e.g. riscv64/ojl) fields: entry/offset/vaddr/etc
- * are 8 bytes wide instead of 4. OCaml's native int is 63-bit on a
- * 64-bit host so this fits without needing Int64.t, same reasoning
- * as split_32/split_16 above using plain int. *)
-let split_64 (word : int) : byte * byte * byte * byte * byte * byte * byte * byte =
-  let x1 = Char.chr (word land 0xff) in
-  let x2 = Char.chr ((word lsr 8) land 0xff) in
-  let x3 = Char.chr ((word lsr 16) land 0xff) in
-  let x4 = Char.chr ((word lsr 24) land 0xff) in
-  let x5 = Char.chr ((word lsr 32) land 0xff) in
-  let x6 = Char.chr ((word lsr 40) land 0xff) in
-  let x7 = Char.chr ((word lsr 48) land 0xff) in
-  let x8 = Char.chr ((word lsr 56) land 0xff) in
-  x1, x2, x3, x4, x5, x6, x7, x8
+ * are 8 bytes wide instead of 4. Used to take a plain `int`, relying
+ * on OCaml's native int being 63-bit on a 64-bit host -- silently
+ * wrong on a 32-bit host (31-bit int), and even on a 64-bit host it
+ * could never represent a *negative* 64-bit word (the sign bit,
+ * bit 63, doesn't fit). Int64.t has neither problem: always exactly
+ * 64 bits, everywhere, sign bit included. Same byte-masking-before-
+ * native-int approach as split_32 above. *)
+let split_64 (word : Int64.t) : byte * byte * byte * byte * byte * byte * byte * byte =
+  let mask = Int64.of_int 0xff in
+  let byte_at (shift : int) : byte =
+    Char.chr (Int64.to_int (Int64.logand (Int64.shift_right_logical word shift) mask)) in
+  byte_at 0, byte_at 8, byte_at 16, byte_at 24, byte_at 32, byte_at 40, byte_at 48, byte_at 56
 
 (*****************************************************************************)
 (* Big *)
@@ -63,7 +69,7 @@ type t =
 
 module Big = struct
 
-let array_32 (word : int) : byte array =
+let array_32 (word : Int32.t) : byte array =
   let x1, x2, x3, x4 = split_32 word in
   (* big part first; most-significant byte first *)
   [| x4; x3; x2; x1 |]
@@ -73,13 +79,13 @@ let array_16 (word : int) : byte array =
   (* big part first; most-significant byte first *)
   [| x2; x1 |]
 
-let array_64 (word : int) : byte array =
+let array_64 (word : Int64.t) : byte array =
   let x1, x2, x3, x4, x5, x6, x7, x8 = split_64 word in
   (* big part first; most-significant byte first *)
   [| x8; x7; x6; x5; x4; x3; x2; x1 |]
 
 (* old: was called lput in A_out.ml *)
-let output_32 (chan : out_channel) (word : int) : unit =
+let output_32 (chan : out_channel) (word : Int32.t) : unit =
   array_32 word |> Array.iter (output_char chan)
 
 (* old: was called wput in A_out.ml *)
@@ -87,7 +93,7 @@ let output_16 (chan : out_channel) (word : int) : unit =
   array_16 word |> Array.iter (output_char chan)
 
 (* claude: old (goken): llput *)
-let output_64 (chan : out_channel) (word : int) : unit =
+let output_64 (chan : out_channel) (word : Int64.t) : unit =
   array_64 word |> Array.iter (output_char chan)
 
 end
@@ -98,7 +104,7 @@ end
 
 module Little = struct
 
-let array_32 ( word : int) : byte array =
+let array_32 ( word : Int32.t) : byte array =
   let x1, x2, x3, x4 = split_32 word in
   (* little part first; least-significant byte first *)
   [| x1; x2; x3; x4 |]
@@ -108,20 +114,20 @@ let array_16 ( word : int) : byte array =
   (* little part first; least-significant byte first *)
   [| x1; x2 |]
 
-let array_64 (word : int) : byte array =
+let array_64 (word : Int64.t) : byte array =
   let x1, x2, x3, x4, x5, x6, x7, x8 = split_64 word in
   (* little part first; least-significant byte first *)
   [| x1; x2; x3; x4; x5; x6; x7; x8 |]
 
 (* old: was called lputl for little-endian put long in linker/Executable.ml *)
-let output_32 (chan : out_channel) (word : int) : unit =
+let output_32 (chan : out_channel) (word : Int32.t) : unit =
   array_32 word |> Array.iter (output_char chan)
 
 let output_16 (chan : out_channel) (word : int) : unit =
   array_16 word |> Array.iter (output_char chan)
 
 (* claude: old (goken): llputl *)
-let output_64 (chan : out_channel) (word : int) : unit =
+let output_64 (chan : out_channel) (word : Int64.t) : unit =
   array_64 word |> Array.iter (output_char chan)
 
 end
