@@ -17,7 +17,7 @@ type t =
   (* CISC *)
   | X86
   | Amd64
-  (* TODO: supported by c--, goken: M68k, Sparc, Powerpc, Alpha *)
+  (* less: supported by c--, goken: M68k, Sparc, Powerpc, Alpha *)
 [@@deriving show]
 
 (* alt: rename to B8 | B16 | ... ? or Int8 | Int16 | ... ? 

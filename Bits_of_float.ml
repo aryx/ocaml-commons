@@ -16,19 +16,15 @@
  * double/single as an integer, no actual computation involved:
  *   external bits_of_float : float -> int64 = "caml_int64_bits_of_float"
  *
- * ocaml-light's own Int64/Int32 modules were never given that
- * primitive (see their .mli: only arithmetic externals -- add, mul,
- * shift, logand, etc. -- no bit-reinterpretation, and no
- * float_of_bits either), so `Int64.bits_of_float`/
- * `Int32.bits_of_float` are simply unbound values there. This module
- * rebuilds the same bit pattern from scratch using only arithmetic
+ * ocaml-light's own Int64/Int32 modules has not yet those primitives.
+ * This module rebuilds the same bit pattern from scratch using only arithmetic
  * that *is* available everywhere: decompose the float into
  * sign/exponent/mantissa via the standard `frexp`/`ldexp` (real
  * primitives, present in ocaml-light too) and reassemble the IEEE754
- * fields by hand -- entirely through Int32.t/Int64.t arithmetic, so
- * (unlike an earlier version of this module) nothing here assumes a
- * particular host word size: it works the same on a 64-bit host and
- * on a 32-bit one (i386, arm32, mips). Only `int_of_float`/`of_int`
+ * fields by hand -- entirely through Int32.t/Int64.t arithmetic
+ * Nothing here assumes a particular host word size: it works the same on
+ * a 64-bit host and on a 32-bit one (i386, arm32, mips).
+ * Only `int_of_float`/`of_int`
  * on values already known to fit in a byte (0..255) ever touch the
  * native, host-width-dependent `int` type.
  *
