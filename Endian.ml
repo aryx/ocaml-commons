@@ -14,19 +14,13 @@ open Common
 (* Helpers *)
 (*****************************************************************************)
 
-(* claude: recent OCaml would just do:
- *   let split_32 (word : int) : byte * byte * byte * byte =
- *     ...
- *     let x4 = Char.chr ((word lsr 24) mod 256) in
- *     ...
- * -- `word lsr 24` can reach bit 31 (a uint32 with its own top bit
- * set), which overflows a 32-bit host's 31-bit native int. Takes an
- * Int32.t instead, always exactly 32 bits regardless of host word
- * size; each byte is masked down to 0..255 before ever touching a
- * native int (via Int32.to_int), which is always safe. This also
- * makes the old "should call lput with a uint32" bounds check
- * unnecessary -- an Int32.t can't hold anything outside uint32 range
- * in the first place, so there's nothing left to check. *)
+(* claude: takes an Int32.t (always exactly 32 bits, any host) rather
+ * than native int -- `word lsr 24` can reach bit 31 (a uint32 with
+ * its own top bit set), which overflows a 32-bit host's 31-bit
+ * native int. Each byte is masked down to 0..255 before ever touching
+ * a native int, always safe. Also makes the old "should call lput
+ * with a uint32" bounds check unnecessary -- an Int32.t can't hold
+ * anything outside uint32 range to begin with. *)
 let split_32 (word : Int32.t) : byte * byte * byte * byte =
   let mask = Int32.of_int 0xff in
   let byte_at (shift : int) : byte =
